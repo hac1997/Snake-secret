@@ -9,13 +9,17 @@ public class TelaDePontosMultiplayer extends JPanel {
 
     private int pontosJogador1;
     private int pontosJogador2;
+    private boolean jogador1Venceu;
+    private boolean venceuPorPontos;
 
     private JButton botaoVoltar;
 
     // Construtor para inicializar a tela de pontos
-    public TelaDePontosMultiplayer(int pontos1, int pontos2) {
+    public TelaDePontosMultiplayer(int pontos1, int pontos2, boolean jogador1Venceu, boolean venceuPorPontos) {
         this.pontosJogador1 = pontos1;
         this.pontosJogador2 = pontos2;
+        this.jogador1Venceu = jogador1Venceu;
+        this.venceuPorPontos = venceuPorPontos;
 
         // Configurações da tela
         setPreferredSize(new Dimension(610, 620));
@@ -33,17 +37,29 @@ public class TelaDePontosMultiplayer extends JPanel {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 28));
 
-        // Desenha a pontuação no centro da tela
-        if(pontosJogador1>pontosJogador2){
-            g.drawString("Jogador 1 venceu com " + pontosJogador1 + " Pontos", 90, 200);
-        }
-        else if(pontosJogador2>pontosJogador1){
-            g.drawString("Jogador 2 venceu com " + pontosJogador2 + " Pontos", 90, 200);
-        }
-        else{
-            g.drawString("Deu empate", 200, 200);
-        }
+        // Centraliza o texto horizontalmente
+        int centroX = getWidth() / 2;
 
+        // Desenha a mensagem de vitória
+        String mensagemVitoria = jogador1Venceu ? "Jogador 1 venceu!" : "Jogador 2 venceu!";
+        int larguraTextoVitoria = g.getFontMetrics().stringWidth(mensagemVitoria);
+        g.drawString(mensagemVitoria, centroX - (larguraTextoVitoria / 2), 200);
+
+        // Desenha a razão da vitória
+        String motivoVitoria = venceuPorPontos ? "Vitória por diferença de pontos!" : "Vitória por colisão!";
+        int larguraTextoMotivo = g.getFontMetrics().stringWidth(motivoVitoria);
+        g.drawString(motivoVitoria, centroX - (larguraTextoMotivo / 2), 250);
+
+        // Desenha a pontuação dos jogadores
+        g.setFont(new Font("Arial", Font.BOLD, 24)); // Reduz um pouco o tamanho da fonte para os pontos
+        String pontos1 = "Pontos Jogador 1: " + pontosJogador1;
+        String pontos2 = "Pontos Jogador 2: " + pontosJogador2;
+
+        int larguraPontos1 = g.getFontMetrics().stringWidth(pontos1);
+        int larguraPontos2 = g.getFontMetrics().stringWidth(pontos2);
+
+        g.drawString(pontos1, centroX - (larguraPontos1 / 2), 300);
+        g.drawString(pontos2, centroX - (larguraPontos2 / 2), 350);
     }
 
     public void botaoTelaInicial() {

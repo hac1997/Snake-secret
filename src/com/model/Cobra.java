@@ -10,9 +10,9 @@ import java.util.ArrayList;
 public class Cobra extends KeyAdapter {
 
     public final ArrayList<Point> segmentos = new ArrayList<>();
-    private String direcao = "D"; // 'C', 'B', 'E', 'D';
+    private String direcao = "D"; // Direção atual
+    private String direcaoPendente = null; // Direção pendente
     public Point novoRabo;
-    public boolean direcaoAtualizada = false;
     public int pontos = 0;
     int tamBloco = 20;
 
@@ -24,18 +24,20 @@ public class Cobra extends KeyAdapter {
         Point cabeca = segmentos.get(0);
         Point novaCabeca = new Point(cabeca);
         switch (this.direcao) {
-            case "C" ->
-                novaCabeca.y--;
-            case "B" ->
-                novaCabeca.y++;
-            case "E" ->
-                novaCabeca.x--;
-            case "D" ->
-                novaCabeca.x++;
+            case "C" -> novaCabeca.y--;
+            case "B" -> novaCabeca.y++;
+            case "E" -> novaCabeca.x--;
+            case "D" -> novaCabeca.x++;
         }
         segmentos.add(0, novaCabeca);
         novoRabo = segmentos.get(segmentos.size() - 1);
         segmentos.remove(segmentos.size() - 1); // Remove a cauda
+
+        // Aplica a direção pendente, se houver
+        if (direcaoPendente != null) {
+            direcao = direcaoPendente;
+            direcaoPendente = null;
+        }
     }
 
     public void crescer() {
@@ -62,8 +64,9 @@ public class Cobra extends KeyAdapter {
     }
 
     public boolean verificarColisaoComCorpo() {
-        for (int i = 1; i < segmentos.size(); i++) { // Começa no índice 1 para ignorar a cabeça
+        for (int i = 1; i < segmentos.size(); i++) {
             if (verificarColisao(segmentos.get(i))) {
+                System.out.println("Autocolisão detectada! Cabeça: " + segmentos.get(0) + ", Segmento: " + segmentos.get(i));
                 return true;
             }
         }
@@ -111,23 +114,24 @@ public class Cobra extends KeyAdapter {
 
     @Override
     public void keyPressed(KeyEvent e) {
-
         int tecla = e.getKeyCode();
+        String novaDirecao = null;
 
-        if (tecla == KeyEvent.VK_UP && !this.getDirecao().equals("B")) {
-            this.setDirecao("C");
-        } else if (tecla == KeyEvent.VK_DOWN && !this.getDirecao().equals("C")) {
-            this.setDirecao("B");
-        } else if (tecla == KeyEvent.VK_LEFT && !this.getDirecao().equals("D")) {
-            this.setDirecao("E");
-        } else if (tecla == KeyEvent.VK_RIGHT && !this.getDirecao().equals("E")) {
-            this.setDirecao("D");
+        if (tecla == KeyEvent.VK_UP && !this.direcao.equals("B")) {
+            novaDirecao = "C";
+        } else if (tecla == KeyEvent.VK_DOWN && !this.direcao.equals("C")) {
+            novaDirecao = "B";
+        } else if (tecla == KeyEvent.VK_LEFT && !this.direcao.equals("D")) {
+            novaDirecao = "E";
+        } else if (tecla == KeyEvent.VK_RIGHT && !this.direcao.equals("E")) {
+            novaDirecao = "D";
         }
-        direcaoAtualizada = true;
+
+        if (novaDirecao != null) {
+            direcaoPendente = novaDirecao; // Armazena a nova direção como pendente
+        }
     }
 
-    public void resetDirecaoAtualizada() {
-        this.direcaoAtualizada = false;
-    }
+
 
 }
